@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .weather-card {
+            max-width: 500px;
+            margin: 50px auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: #ffffff;
+            padding: 2rem;
+        }
+        /* Suggestion List Styling */
+        #city-suggestions {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #dee2e6;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            width: 100%;
+            z-index: 1000;
+            background: white;
+            border-radius: 0 0 5px 5px;
+        }
+        #city-suggestions li {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        #city-suggestions li:hover {
+            background-color: #f1f3f5;
+            color: #0d6efd;
+        }
+        #weather-icon {
+            width: 80px;
+            display: none; /* Hidden until data is fetched */
+        }
+        .input-group { position: relative; }
+
+        .search-container {
+        position: relative; /* Crucial for anchoring the dropdown */
+        width: 100%;
+    }
+    </style>
+</head>
+<body class="bg-light">
+
+<div class="container">
+    <div class="weather-card">
+        <h3 class="fw-bold text-center mb-4">Weather App</h3>
+        <p class="text-muted small text-center mb-4">Enter a city to get real-time weather info.</p>
+
+        <div class="search-container">
+          <div class="input-group">
+            <input type="text" id="city" class="form-control" placeholder="Type city name..." autocomplete="off">
+            <button class="btn btn-primary px-4" id="get-weather" type="button">Search</button>
+          </div>
+        
+        <ul id="city-suggestions"></ul>
+        </div>
+
+        <div class="text-center mt-4">
+            <img id="weather-icon" src="" alt="Weather Icon" class="mb-2">
+            <div id="weather-info" class="fw-medium text-secondary">
+                Results will appear here...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- YOUR SCRIPT START ---
+const apiKey = '711f62e772f7f1b72652548fe2d39348'; 
+const cityInput = document.getElementById('city');
+const getWeatherBtn = document.getElementById('get-weather');
+const weatherInfo = document.getElementById('weather-info');
+let cityData = []; // Initialized as empty array
+
+// NOTE: Ensure the path to citylist.json is an absolute URL if deploying on GAS
+fetch("https://raw.githubusercontent.com/lutangar/cities.json/master/cities.json").then(async response => {
+  try {
+   cityData = await response.json();
+   console.log('City data loaded');
+ } catch(error) {
+   console.error('Error loading city list:', error);
+ }
+});
+
+getWeatherBtn.addEventListener('click', async () => {
+  const city = cityInput.value;
+  if (!city) {
+    alert('Please enter a city name.');
+    return;
+  }
+  
+  const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`);
+  const weatherData = await response.json();
+  
+  if (weatherData.cod === '404') {
+    weatherInfo.textContent = 'City not found.';
+    document.getElementById('weather-icon').style.display = 'none';
+    return;
+  }
+  
+  const temp = Math.floor(weatherData.main.temp - 273.15); 
+  let weatherDescription = weatherData.weather[0].description;
+  let icon = weatherData.weather[0].icon;
+  let imageURL = "https://openweathermap.org/img/wn/" + icon + "@2x.png";
+
+  const iconElement = document.getElementById('weather-icon');
+  iconElement.src = imageURL;
+  iconElement.style.display = 'inline-block'; 
+  
+  weatherInfo.textContent = `The weather in ${city} is currently ${weatherDescription} with a temperature of ${temp}°C`;
+});
+
+cityInput.addEventListener('keyup', function() {
+  const searchTerm = this.value.toLowerCase();
+  if (searchTerm.length < 2) { // Optimization: don't search until 2 chars typed
+    document.getElementById('city-suggestions').innerHTML = '';
+    return;
+  }
+
+  const filteredCities = cityData.filter(city => 
+    city.name.toLowerCase().startsWith(searchTerm)
+  );
+
+  const suggestionsList = document.getElementById('city-suggestions');
+  suggestionsList.innerHTML = ''; 
+
+  if (!filteredCities.length) {
+    return;
+  }
+
+  const top10Cities = filteredCities.slice(0, 10);
+
+  top10Cities.forEach(city => {
+    const suggestionItem = document.createElement('li');
+    suggestionItem.textContent = `${city.name}, ${city.country}`;
+    suggestionItem.addEventListener('click', () => {
+      cityInput.value = `${city.name}, ${city.country}`; // Simple name for the API call
+      suggestionsList.innerHTML = ''; 
+    });
+    suggestionsList.appendChild(suggestionItem);
+  });
+});
+// --- YOUR SCRIPT END ---
+</script>
+
+</body>
+</html>
