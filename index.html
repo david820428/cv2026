@@ -49,7 +49,7 @@
         .bg-primary-subtle { background-color: #e7f0ff; }
         .bg-success-subtle { background-color: #d1e7dd; }
 
-        /* Chat UI - Initially Hidden */
+        /* Chat UI - Visibility Control */
         #chat-box.hidden {
             display: none !important;
         }
@@ -365,7 +365,7 @@
             <i class="bi bi-chat-dots-fill fs-3 text-white"></i>
         </button>
 
-        <div id="chat-box" class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden; height: 450px;">
+        <div id="chat-box" class="card shadow-lg border-0 hidden" style="border-radius: 15px; overflow: hidden; height: 450px;">
             
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
                 <div class="d-flex align-items-center">
@@ -457,7 +457,7 @@
           const chatBody = document.getElementById("chat-body");
 
           // ==========================================
-          // SMART AUTO-POPUP (Once per session)
+          // SMART AUTO-POPUP (Once per session) - 5 SECOND DELAY
           // ==========================================
           setTimeout(() => {
               const hasPoppedUp = sessionStorage.getItem("ai_chat_popped");
