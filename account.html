@@ -144,9 +144,8 @@
         // 2. Send to Google Apps Script via Fetch API
         fetch(BACKEND_URL, {
             method: "POST",
-            mode: "cors",
             headers: { 
-                "Content-Type": "text/plain"
+                "Content-Type": "application/json"  // Change from text/plain to application/json
             },
             body: JSON.stringify({ 
                 action: "signUp", 
