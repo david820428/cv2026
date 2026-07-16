@@ -48,6 +48,15 @@
 
         .bg-primary-subtle { background-color: #e7f0ff; }
         .bg-success-subtle { background-color: #d1e7dd; }
+
+        /* Chat UI - Initially Hidden */
+        #chat-box.hidden {
+            display: none !important;
+        }
+
+        #chat-toggle.hidden {
+            display: none !important;
+        }
         
     </style>
 </head>
@@ -79,7 +88,7 @@
                 <div class="col-md-6 mb-5 mb-md-0">
                     <h2 class="section-title text-start">About Me</h2>
                     <h3 class="fw-bold mb-4">A Problem Solver at Heart.</h3>
-                    <p class="text-muted">From brewing chemical reactions to crafting digital solutions, I wear two hats! A seasoned chemical engineer with experience in process engineering, I understand the intricacies of industrial processes. But my passion for tech ignited a side hustle as a self-taught full-stack developer. Now, I build innovative solutions that crunch industrial data, helping manufacturers streamline operations and turn complexity into clarity.</p>
+                    <p class="text-muted">From brewing chemical reactions to crafting digital solutions, I wear two hats! A seasoned chemical engineer with experience in process engineering, I understand technical complexities. Now, as an aspiring software engineer, I apply that problem-solving mindset to create elegant digital solutions. This unique blend of expertise positions me to build better products and bridge the gap between technical and business worlds.</p>
                 </div>
                 <div class="col-md-6">
                     <h2 class="section-title text-start">Core Skills</h2>
@@ -188,7 +197,7 @@
                       <div class="mb-3 d-flex justify-content-center">
                               <img src="https://lh3.googleusercontent.com/u/0/d/1fqNx38iQW8Xigspde6CDw0-Ljb4iGRdm" alt="License Icon" style="width: 60px; height: 60px; object-fit: contain;">
                       </div>
-                      <h5 class="fw-bold">Driver’s License</h5>
+                      <h5 class="fw-bold">Driver's License</h5>
                       <p class="small text-muted">Victoria Australia</p>
                   </div>
               </div>
@@ -234,6 +243,7 @@
             </div>
         </div>
     </section>
+
 
     <section id="demos" class="py-5 bg-white">
         <div class="container">
@@ -347,17 +357,15 @@
                 </div>
             </div>
         </div>
-        <div class="card shadow-sm mx-auto" style="max-width: 400px; margin-top: 50px;">
-    
     </section>
 
     <div class="position-fixed bottom-0 end-0 m-4 z-3" style="max-width: 360px; width: 100%;">
         
-        <button id="chat-toggle" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center float-end" style="width: 60px; height: 60px; transition: transform 0.2s;">
+        <button id="chat-toggle" class="btn btn-primary rounded-circle shadow-lg d-flex align-items-center justify-content-center float-end hidden" style="width: 60px; height: 60px; transition: transform 0.3s ease;">
             <i class="bi bi-chat-dots-fill fs-3 text-white"></i>
         </button>
 
-        <div id="chat-box" class="card shadow-lg border-0 d-none" style="border-radius: 15px; overflow: hidden; height: 450px;">
+        <div id="chat-box" class="card shadow-lg border-0" style="border-radius: 15px; overflow: hidden; height: 450px;">
             
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
                 <div class="d-flex align-items-center">
@@ -382,7 +390,7 @@
 
             <div class="card-footer bg-white border-0 p-2">
                 <form id="chat-form" class="input-group">
-                    <input type="text" id="chat-input" class="form-control rounded-pill-start border-1 px-3 small text-muted" placeholder="Ask about David's skills, experiences, projects..." autocomplete="off" required>
+                    <input type="text" id="chat-input" class="form-control rounded-pill-start border-1 px-3 small text-muted" placeholder="Ask about David's skills, experiences, projects..." autocomplete="off">
                     <button type="submit" class="btn btn-primary rounded-pill-end px-3">
                         <i class="bi bi-send-fill"></i>
                     </button>
@@ -448,33 +456,34 @@
           const chatInput = document.getElementById("chat-input");
           const chatBody = document.getElementById("chat-body");
 
-          // UI Toggle View Transitions
-          toggleBtn.addEventListener("click", () => {
-              chatBox.classList.remove("d-none");
-              toggleBtn.classList.add("d-none");
-              scrollToBottom();
-          });
-
-          closeBtn.addEventListener("click", () => {
-              chatBox.classList.add("d-none");
-              toggleBtn.classList.remove("d-none");
-          });
-
           // ==========================================
-          // PLACED HERE: SMART AUTO-POPUP (Once per session)
+          // SMART AUTO-POPUP (Once per session)
           // ==========================================
           setTimeout(() => {
               const hasPoppedUp = sessionStorage.getItem("ai_chat_popped");
 
-              if (!hasPoppedUp && chatBox.classList.contains("d-none")) {
-                  chatBox.classList.remove("d-none");
-                  toggleBtn.classList.add("d-none");
+              if (!hasPoppedUp) {
+                  // Show chat box, hide toggle button
+                  chatBox.classList.remove("hidden");
+                  toggleBtn.classList.add("hidden");
                   scrollToBottom();
                   
-                  // Mark that it popped up once, so it stays quiet on other pages
+                  // Mark that it popped up once
                   sessionStorage.setItem("ai_chat_popped", "true");
               }
-          }, 3000); // 3-second delay
+          }, 2000); // 2-second delay
+
+          // UI Toggle View Transitions
+          toggleBtn.addEventListener("click", () => {
+              chatBox.classList.remove("hidden");
+              toggleBtn.classList.add("hidden");
+              scrollToBottom();
+          });
+
+          closeBtn.addEventListener("click", () => {
+              chatBox.classList.add("hidden");
+              toggleBtn.classList.remove("hidden");
+          });
 
           // Handle Form Processing
           chatForm.addEventListener("submit", async function(e) {
