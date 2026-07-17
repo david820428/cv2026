@@ -141,30 +141,32 @@
         btnText.innerText = " Creating...";
         status.innerText = "";
 
-        // 2. Send to Google Apps Script via Fetch API
+        // 2. Build FormData properly
+        const formData = new URLSearchParams();
+        formData.append('action', 'signUp');
+        formData.append('username', userData.username);
+        formData.append('email', userData.email);
+        formData.append('password', userData.password);
+
+        // 3. Send to Google Apps Script via Fetch API
         fetch(BACKEND_URL, {
             method: "POST",
-            body: new FormData(Object.assign(document.createElement('form'), {
-                elements: [Object.assign(document.createElement('input'), {name: 'action', value: 'signUp'}),
-                          Object.assign(document.createElement('input'), {name: 'username', value: userData.username}),
-                          Object.assign(document.createElement('input'), {name: 'email', value: userData.email}),
-                          Object.assign(document.createElement('input'), {name: 'password', value: userData.password})]
-            }))
+            body: formData
         })
         .then(res => res.text())
         .then(text => {
             const res = JSON.parse(text);
             
-            // 3. End Loading State
+            // 4. End Loading State
             btn.disabled = false;
             spinner.classList.add('d-none');
             btnText.innerText = "Create Account";
 
-            // 4. Show Response
+            // 5. Show Response
             status.className = "mt-3 text-center small fw-bold " + (res.success ? "text-success" : "text-danger");
             status.innerText = res.message;
             
-            // 5. Auto-switch to login on success
+            // 6. Auto-switch to login on success
             if(res.success) {
                 setTimeout(() => {
                     showView('login');
@@ -206,30 +208,32 @@
         btnText.innerText = " Verifying...";
         status.innerText = "";
 
-        // 2. Send to Google Apps Script via Fetch API
+        // 2. Build FormData properly
+        const formData = new URLSearchParams();
+        formData.append('action', 'login');
+        formData.append('username', user);
+        formData.append('password', pass);
+
+        // 3. Send to Google Apps Script via Fetch API
         fetch(BACKEND_URL, {
             method: "POST",
-            body: new FormData(Object.assign(document.createElement('form'), {
-                elements: [Object.assign(document.createElement('input'), {name: 'action', value: 'login'}),
-                          Object.assign(document.createElement('input'), {name: 'username', value: user}),
-                          Object.assign(document.createElement('input'), {name: 'password', value: pass})]
-            }))
+            body: formData
         })
         .then(res => res.text())
         .then(text => {
             const res = JSON.parse(text);
             
-            // 3. End Loading State
+            // 4. End Loading State
             btn.disabled = false;
             spinner.classList.add('d-none');
             btnText.innerText = "Sign In";
 
-            // 4. Show Response
+            // 5. Show Response
             if(res.success) {
                 status.className = "mt-3 text-center small fw-bold text-success";
                 status.innerText = "Welcome back, " + res.username + "!";
                 
-                // 5. Clear fields and store session
+                // 6. Clear fields and store session
                 setTimeout(() => {
                     document.getElementById('login-user').value = '';
                     document.getElementById('login-pass').value = '';
